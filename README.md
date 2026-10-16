@@ -17,6 +17,27 @@ purpose; what is here is the engineering that keeps the numbers honest.
 
 Single source of truth is SQLite; a DynamoDB mirror feeds a website and is never authoritative.
 
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Odds API] --> C[Halftime loop]
+    B[ESPN scoreboards] --> C
+    C --> R[(Raw snapshots)]
+    C --> S[Strategies + router]
+    S --> D[Discord alerts]
+    S --> DB[(SQLite: source of truth)]
+    DB -->|one way| M[(DynamoDB mirror)]
+    B --> T[Nightly settler]
+    T --> DB
+    R --> P[Price recovery]
+    P --> DB
+    DB --> W[Capture watchdog]
+    W --> D
+```
+
+More detail in [docs/architecture.md](docs/architecture.md).
+
 ## What's in this repo
 
 | File | Why it exists |
